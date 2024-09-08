@@ -1,117 +1,87 @@
-/* ----- NAVIGATION BAR FUNCTION ----- */
-function myMenuFunction(){
-    var menuBtn = document.getElementById("myNavMenu");
+    const canvas = document.getElementById('canvas');
+    const increaseBtn = document.getElementById('increase');
+    const decreaseBtn = document.getElementById('decrease');
+    const sizeEL = document.getElementById('size');
+    const colorEl = document.getElementById('color');
+    const clearEl = document.getElementById('clear');
 
-    if(menuBtn.className === "nav-menu"){
-      menuBtn.className += " responsive";
-    } else {
-      menuBtn.className = "nav-menu";
+    const ctx = canvas.getContext('2d');
+
+
+    let size = 10
+    let isPressed = false
+    colorEl.value = 'black'
+    let color = colorEl.value
+    let x
+    let y
+
+    canvas.addEventListener('mousedown', (e) => {
+        isPressed = true
+
+        x = e.offsetX
+        y = e.offsetY
+    })
+
+    document.addEventListener('mouseup', (e) => {
+        isPressed = false
+
+        x = undefined
+        y = undefined
+    })
+
+    canvas.addEventListener('mousemove', (e) => {
+        if(isPressed) {
+            const x2 = e.offsetX
+            const y2 = e.offsetY
+
+            drawCircle(x2, y2)
+            drawLine(x, y, x2, y2)
+
+            x = x2
+            y = y2
+        }
+    })
+
+    function drawCircle(x, y) {
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2)
+        ctx.fillStyle = color
+        ctx.fill()
     }
-  }
 
-/* ----- ADD SHADOW ON NAVIGATION BAR WHILE SCROLLING ----- */
-  window.onscroll = function() {headerShadow()};
-
-  function headerShadow() {
-    const navHeader =document.getElementById("header");
-
-    if (document.body.scrollTop > 50 || document.documentElement.scrollTop >  50) {
-
-      navHeader.style.boxShadow = "0 1px 6px rgba(0, 0, 0, 0.1)";
-      navHeader.style.height = "70px";
-      navHeader.style.lineHeight = "70px";
-
-    } else {
-
-      navHeader.style.boxShadow = "none";
-      navHeader.style.height = "90px";
-      navHeader.style.lineHeight = "90px";
-
+    function drawLine(x1, y1, x2, y2) {
+        ctx.beginPath()
+        ctx.moveTo(x1, y1)
+        ctx.lineTo(x2, y2)
+        ctx.strokeStyle = color
+        ctx.lineWidth = size * 2
+        ctx.stroke()
     }
-  }
 
-
-/* ----- TYPING EFFECT ----- */
- var typingEffect = new Typed(".typedText",{
-    strings : ["Student","trainee"],
-    loop : true,
-    typeSpeed : 100, 
-    backSpeed : 80,
-    backDelay : 2000,
- })
-
-
-/* ----- ## -- SCROLL REVEAL ANIMATION -- ## ----- */
- const sr = ScrollReveal({
-        origin: 'top',
-        distance: '80px',
-        duration: 2000,
-        reset: true     
- })
-
-/* -- HOME -- */
-sr.reveal('.featured-text-card',{})
-sr.reveal('.featured-name',{delay: 100})
-sr.reveal('.featured-text-info',{delay: 200})
-sr.reveal('.featured-text-btn',{delay: 200})
-sr.reveal('.social_icons',{delay: 200})
-sr.reveal('.featured-image',{delay: 300})
-
-
-/* -- PROJECT BOX -- */
-sr.reveal('.project-box',{interval: 200})
-
-/* -- HEADINGS -- */
-sr.reveal('.top-header',{})
-
-/* ----- ## -- SCROLL REVEAL LEFT_RIGHT ANIMATION -- ## ----- */
-
-/* -- ABOUT INFO & CONTACT INFO -- */
-const srLeft = ScrollReveal({
-  origin: 'left',
-  distance: '80px',
-  duration: 2000,
-  reset: true
-})
-
-srLeft.reveal('.about-info',{delay: 100})
-srLeft.reveal('.contact-info',{delay: 100})
-
-/* -- ABOUT SKILLS & FORM BOX -- */
-const srRight = ScrollReveal({
-  origin: 'right',
-  distance: '80px',
-  duration: 2000,
-  reset: true
-})
-
-srRight.reveal('.skills-box',{delay: 100})
-srRight.reveal('.form-control',{delay: 100})
-
-
-
-/* ----- CHANGE ACTIVE LINK ----- */
-
-const sections = document.querySelectorAll('section[id]')
-
-function scrollActive() {
-  const scrollY = window.scrollY;
-
-  sections.forEach(current =>{
-    const sectionHeight = current.offsetHeight,
-        sectionTop = current.offsetTop - 50,
-      sectionId = current.getAttribute('id')
-
-    if(scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) { 
-
-        document.querySelector('.nav-menu a[href*=' + sectionId + ']').classList.add('active-link')
-
-    }  else {
-
-      document.querySelector('.nav-menu a[href*=' + sectionId + ']').classList.remove('active-link')
-
+    function updateSizeOnScreen() {
+        sizeEL.innerText = size
     }
-  })
-}
 
-window.addEventListener('scroll', scrollActive)
+    increaseBtn.addEventListener('click', () => {
+        size += 5
+
+        if(size > 50) {
+            size = 50
+        }
+
+        updateSizeOnScreen()
+    })
+
+    decreaseBtn.addEventListener('click', () => {
+        size -= 5
+
+        if(size < 5) {
+            size = 1
+        }
+
+        updateSizeOnScreen()
+    })
+
+    colorEl.addEventListener('change', (e) => color = e.target.value)
+
+    clearEl.addEventListener('click', () => ctx.clearRect(0,0, canvas.width, canvas.height))
